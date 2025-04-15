@@ -1,0 +1,91 @@
+import { useState } from "react";
+
+const menuData = [
+  { id: 1, category: "Burgers", name: "Classic Burger", price: 8.99 },
+  { id: 2, category: "Burgers", name: "Cheeseburger", price: 9.99 },
+  { id: 3, category: "Drinks", name: "Cola", price: 1.99 },
+  { id: 4, category: "Drinks", name: "Iced Tea", price: 2.49 },
+];
+
+const categories = ["All", ...new Set(menuData.map((item) => item.category))];
+
+export default function CampusFoodClone() {
+  const [cart, setCart] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const filteredMenu =
+    selectedCategory === "All"
+      ? menuData
+      : menuData.filter((item) => item.category === selectedCategory);
+
+  const addToCart = (item) => {
+    setCart((prevCart) => [...prevCart, item]);
+  };
+
+  const removeFromCart = (index) => {
+    setCart((prevCart) => prevCart.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-1/4 bg-white p-4 border-r">
+        <h2 className="text-xl font-bold mb-4">Categories</h2>
+        <ul>
+          {categories.map((cat) => (
+            <li key={cat}>
+              <button
+                className={`w-full text-left py-2 px-4 rounded hover:bg-gray-200 ${
+                  selectedCategory === cat ? "bg-gray-200 font-semibold" : ""
+                }`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                {cat}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      {/* Main Content */}
+      <main className="w-2/4 p-6">
+        <h1 className="text-2xl font-bold mb-4">Menu</h1>
+        <div className="grid grid-cols-1 gap-4">
+          {filteredMenu.map((item) => (
+            <div key={item.id} className="bg-white p-4 rounded shadow">
+              <h3 className="text-lg font-semibold">{item.name}</h3>
+              <p className="text-gray-600">${item.price.toFixed(2)}</p>
+              <button
+                onClick={() => addToCart(item)}
+                className="mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
+        </div>
+      </main>
+
+      {/* Cart */}
+      <aside className="w-1/4 bg-white p-4 border-l">
+        <h2 className="text-xl font-bold mb-4">Your Cart</h2>
+        <ul>
+          {cart.map((item, index) => (
+            <li key={index} className="flex justify-between items-center py-2">
+              <span>{item.name}</span>
+              <button
+                onClick={() => removeFromCart(index)}
+                className="text-red-600 hover:text-red-800"
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4 font-semibold">
+          Total: ${cart.reduce((sum, item) => sum + item.price, 0).toFixed(2)}
+        </div>
+      </aside>
+    </div>
+  );
+}
